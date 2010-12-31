@@ -219,8 +219,8 @@ multi sub prompt-conway (
             !!             $DEFAULT_PROMPT;
 
     # Clean up the prompt, adding trailing punctuation, as required...
-    # $prompt.=subst(/<after \w> $/, ": ");
-    # $prompt.=subst(/<after \S> $/, " ");
+    $prompt ~= ": " if $prompt ~~ /\w $/;
+    $prompt ~= " "  if $prompt ~~ /\S $/;
     $prompt.=subst(/\n$/,"");
 
     # Determine the type of prompter to build
