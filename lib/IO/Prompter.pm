@@ -25,6 +25,10 @@ my regex Yes     { :i <-[y]>               }
 my regex yesno   { :i [ y | yes | n | no ] }
 my regex YesNo   {    [ Y | Yes | N | No ] }
 
+sub check-integer($a) {
+    $a ~~ /^ \h* <[+\-]>? \d+ \h* $/;
+}
+
 sub check-number($a) {
     $a ~~ /^ \h* <[+\-]>? \d+ [\.\d*]? [<[eE]><[+\-]>?\d+]?  \h* $/;
 }
@@ -34,18 +38,18 @@ my %constraint =
 #    Prompter   Add to  What to print on  Use this to check that   Conversion
 #      type     prompt  invalid input     input is valid           function
 #    ========   ======  ================  ======================   ==========
-      ::Int  => [': ', 'a valid integer', /^ \h* <integer> \h* $/, *.Int      ],
+      ::Int  => [': ', 'a valid integer', &check-integer,          *.Int      ],
       ::Real => [': ', 'a valid number',  &check-number,             +*       ],
       ::Bool => ['? ', '"yes" or "no"',   /^ \h* <yesno>   \h* $/, {?/<yes>/} ],
     SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?/<yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <Yes>     \h* $/, {?/<yes>/} ],
  CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <YesNo>   \h* $/, {?/<yes>/} ],
-         Any => [': ', 'anything',        /      <null>         /, { $^self } ];
+         Any => [': ', 'anything',        -> $a { Bool::True }   , { $^self } ];
 
 # This sub ensures a value matches the specified set of constraints...
 sub invalid_input ($input, @constraints) {
     for @constraints -> $constraint {
-        # say "Skipping " ~ :$constraint.perl;
+        # say "Processing " ~ :$constraint.perl;
         if $input !~~ $constraint.value {
             return "(must {$constraint.key})";
         }
@@ -53,7 +57,7 @@ sub invalid_input ($input, @constraints) {
     return;
 }
 
-my $NULL_DEFAULT = Mu;
+my $NULL_DEFAULT = Any;
 
 # This sub takes type info and provides a prompter that accepts only that type
 # [TODO: Prompters are stateless, so this sub should be 'is cached'
@@ -73,7 +77,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
         "be an acceptable value" => %build_opt<type_constraints>.defined
             ?? { $extractor($^input) ~~ %build_opt<type_constraints> } !! { 1 },
         %build_opt<must>.pairs;
-        
+    
     # Check that default supplied (via lower case option) is a valid response...
     if %build_opt<default> !=:= $NULL_DEFAULT {
         if invalid_input(%build_opt<default>, @input_constraints) -> $problem {
