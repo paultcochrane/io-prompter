@@ -15,15 +15,15 @@ class IO::Prompter::Result {
 module IO::Prompter;
 
 # Utility regexes...
-regex null    { <before .?> }   # [TODO: Remove when Rakudo implements this]
-regex sign    { <[+\-]>     }
-regex digits  {  \d+:       }
-regex number  { <sign>? <digits> [\.<digits>?]? [<[eE]><sign>?<digits>]? }
-regex integer { <sign>? <digits>        }
-regex yes     { :i ^ \h* [ y | yes ]    }
-regex Yes     { :i <-[y]>               }
-regex yesno   { :i [ y | yes | n | no ] }
-regex YesNo   {    [ Y | Yes | N | No ] }
+my regex null    { <before .?> }   # [TODO: Remove when Rakudo implements this]
+my regex sign    { <[+\-]>     }
+my regex digits  {  \d+:       }
+my regex number  { <sign>? <digits> [\.<digits>?]? [<[eE]><sign>?<digits>]? }
+my regex integer { <sign>? <digits>        }
+my regex yes     { :i ^ \h* [ y | yes ]    }
+my regex Yes     { :i <-[y]>               }
+my regex yesno   { :i [ y | yes | n | no ] }
+my regex YesNo   {    [ Y | Yes | N | No ] }
 
 # Table of information for building prompters for various types...
 my %constraint =
@@ -31,7 +31,7 @@ my %constraint =
 #      type     prompt  invalid input     input is valid           function
 #    ========   ======  ================  ======================   ==========
       ::Int  => [': ', 'a valid integer', /^ \h* <integer> \h* $/, *.Int      ],
-      ::Num  => [': ', 'a valid number',  /^ \h* <number>  \h* $/,   +*       ],
+      ::Real => [': ', 'a valid number',  /^ \h* <number>  \h* $/,   +*       ],
       ::Bool => ['? ', '"yes" or "no"',   /^ \h* <yesno>   \h* $/, {?/<yes>/} ],
     SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?/<yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <Yes>     \h* $/, {?/<yes>/} ],
@@ -41,9 +41,10 @@ my %constraint =
 # This sub ensures a value matches the specified set of constraints...
 sub invalid_input ($input, @constraints) {
     for @constraints -> $constraint {
-        if $input !~~ $constraint.value {
-            return "(must {$constraint.key})";
-        }
+        say "Skipping " ~ :$constraint.perl;
+        # if $input !~~ $constraint.value {
+        #     return "(must {$constraint.key})";
+        # }
     }
     return;
 }
@@ -68,7 +69,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
         "be an acceptable value" => %build_opt<type_constraints>.defined
             ?? { $extractor($^input) ~~ %build_opt<type_constraints> } !! { 1 },
         %build_opt<must>.pairs;
-
+        
     # Check that default supplied (via lower case option) is a valid response...
     if %build_opt<default> !=:= $NULL_DEFAULT {
         if invalid_input(%build_opt<default>, @input_constraints) -> $problem {
@@ -77,7 +78,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
             %build_opt.delete('default');
         }
     }
-
+    
     # Use it to build the requested prompter...
     return sub ($prompt is copy, *%opt) {
         # Add trailing punctuation, if requested to:
@@ -229,7 +230,7 @@ multi sub prompt-conway (
                      !!  $yes      ??  'SemiBool'
                      !!  $yesno    ??  Bool
                      !!  $integer  ??  Int
-                     !!  $number   ??  Num
+                     !!  $number   ??  Real
                      !!                'Any';
 
     # Get the necessary prompter...
