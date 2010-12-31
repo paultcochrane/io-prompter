@@ -25,13 +25,17 @@ my regex Yes     { :i <-[y]>               }
 my regex yesno   { :i [ y | yes | n | no ] }
 my regex YesNo   {    [ Y | Yes | N | No ] }
 
+sub check-number($a) {
+    $a ~~ /^ \h* <[+\-]>? \d+ [\.\d*]? [<[eE]><[+\-]>?\d+]?  \h* $/;
+}
+
 # Table of information for building prompters for various types...
 my %constraint =
 #    Prompter   Add to  What to print on  Use this to check that   Conversion
 #      type     prompt  invalid input     input is valid           function
 #    ========   ======  ================  ======================   ==========
       ::Int  => [': ', 'a valid integer', /^ \h* <integer> \h* $/, *.Int      ],
-      ::Real => [': ', 'a valid number',  /^ \h* <number>  \h* $/,   +*       ],
+      ::Real => [': ', 'a valid number',  &check-number,             +*       ],
       ::Bool => ['? ', '"yes" or "no"',   /^ \h* <yesno>   \h* $/, {?/<yes>/} ],
     SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?/<yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <Yes>     \h* $/, {?/<yes>/} ],
@@ -41,10 +45,10 @@ my %constraint =
 # This sub ensures a value matches the specified set of constraints...
 sub invalid_input ($input, @constraints) {
     for @constraints -> $constraint {
-        say "Skipping " ~ :$constraint.perl;
-        # if $input !~~ $constraint.value {
-        #     return "(must {$constraint.key})";
-        # }
+        # say "Skipping " ~ :$constraint.perl;
+        if $input !~~ $constraint.value {
+            return "(must {$constraint.key})";
+        }
     }
     return;
 }
