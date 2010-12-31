@@ -48,7 +48,7 @@ sub invalid_input ($input, @constraints) {
     return;
 }
 
-constant $NULL_DEFAULT = Mu;
+my $NULL_DEFAULT = Mu;
 
 # This sub takes type info and provides a prompter that accepts only that type
 # [TODO: Prompters are stateless, so this sub should be 'is cached'
@@ -57,7 +57,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
 
     # Grab the correct info out of the table...
     my ($punct, $description, $match, $extractor)
-        = %constraint{$type} // %constraint<Any>;
+        = (%constraint{$type} // %constraint<Any>).list;
 
     # Create single hash of input constraints...
     my @input_constraints = 
@@ -176,13 +176,15 @@ multi sub prompt ( &block ) is export {
     }
 }
 
-constant $DEFAULT_PROMPT = '>';
-constant $ARGS_PROMPT = 'Enter command-line args:';
-constant $ENV_VARS = join "", map {"my \$$^NAME = %*ENV<$^NAME>;"}, %*ENV.keys;
+my $DEFAULT_PROMPT = '>';
+my $ARGS_PROMPT = 'Enter command-line args:';
+my $ENV_VARS = join "", map {"my \$$^NAME = %*ENV<$^NAME>;"}, %*ENV.keys;
+
+my $wiped;
 
 # This variant does the usual "single input" prompt-and-read behaviour
 # [TODO: Should provide short-forms too: :a(:argv) when Rakudo supports that]...
-multi sub prompt (
+multi sub prompt-conway (
   :$args        of Bool,
   :$default     of Str        = $NULL_DEFAULT,
   :$DEFAULT     of Str        = $default,
@@ -208,7 +210,7 @@ multi sub prompt (
   :$Yes         of Bool,
   :$YesNo       of Bool,
   *@prompt,
-) is export {
+) is export(:DEFAULT) {
     # If prompt not explicitly specified, use the strings provided, or else
     # use a default prompt...
     $prompt //= @prompt ?? @prompt.join
@@ -216,8 +218,8 @@ multi sub prompt (
             !!             $DEFAULT_PROMPT;
 
     # Clean up the prompt, adding trailing punctuation, as required...
-    $prompt.=subst(/<after \w> $/, ": ");
-    $prompt.=subst(/<after \S> $/, " ");
+    # $prompt.=subst(/<after \w> $/, ": ");
+    # $prompt.=subst(/<after \S> $/, " ");
     $prompt.=subst(/\n$/,"");
 
     # Determine the type of prompter to build
@@ -236,7 +238,6 @@ multi sub prompt (
                                      );
 
     # Wipe first if necessary...
-    state $wiped;
     print "\n" x 1000 if $wipe || ($wipefirst && !$wiped++);
 
     # Use the necessary prompter...
