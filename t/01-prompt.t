@@ -28,8 +28,10 @@ plan *;
 
 {
     my $stub = StubIO.new(:input("blue", ""));
-    is prompt-conway("Color", :in($stub), :out($stub)),
-       "blue", "Successfully input blue";
+    my $result = prompt-conway("Color", :in($stub), :out($stub));
+    ok $result, "Result is true";
+    ok $result ~~ Str, "Result is a Str";
+    is $result, "blue", "Successfully input blue";
     is $stub.output[0], "Color: ", "Properly added colon & space at end of prompt";
     is prompt-conway("Color:", :default("Chartreuse"), :in($stub), :out($stub)),
        "Chartreuse", "Successfully got default input";
