@@ -25,14 +25,6 @@ my regex Yes     { :i <-[y]>               }
 my regex yesno   { :i [ y | yes | n | no ] }
 my regex YesNo   {    [ Y | Yes | N | No ] }
 
-sub check-integer($a) {
-    $a ~~ /^ \h* <[+\-]>? \d+ \h* $/;
-}
-
-sub check-number($a) {
-    $a ~~ /^ \h* <[+\-]>? \d+ [\.\d*]? [<[eE]><[+\-]>?\d+]?  \h* $/;
-}
-
 # Table of information for building prompters for various types...
 my %constraint =
 #    Prompter   Add to  What to print on  Use this to check that    Conversion
