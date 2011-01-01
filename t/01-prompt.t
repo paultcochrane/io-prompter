@@ -28,19 +28,36 @@ plan *;
 
 {
     my $stub = StubIO.new(:input("3", ""));
+    is prompt-conway("Age", :integer, :in($stub), :out($stub)),
+       3, "Successfully input integer 3";
+    is $stub.output[0], "Age: ", "Properly added colon & space at end of prompt";
+    is prompt-conway("Age:", :integer, :default(42), :in($stub), :out($stub)),
+       42, "Successfully got default input";
+}
+
+{
+    my $stub = StubIO.new(:input("Hello!", "blue 42", "23.3", "4 2", "", "-345", "0", "13"));
+    is prompt-conway("Age:", :integer,
+                             :must({'be greater than 0' => {$_ > 0} }), 
+                             :in($stub), :out($stub)),
+       13, "Successfully input integer 13";
+}
+
+{
+    my $stub = StubIO.new(:input("3.5", ""));
     is prompt-conway("Weight:", :number, :in($stub), :out($stub)),
-       3, "Successfully input 3";
+       3.5, "Successfully input number 3.5";
     is $stub.output[0], "Weight: ", "Properly added space at end of prompt";
     is prompt-conway("Weight:", :number, :default(42), :in($stub), :out($stub)),
        42, "Successfully got default input";
 }
 
 {
-    my $stub = StubIO.new(:input("Hello!", "blue 42", "4 2", "", "-345", "0", "13"));
+    my $stub = StubIO.new(:input("Hello!", "blue 42", "4 2", "", "-345", "0", "13.6"));
     is prompt-conway("Weight:", :number,
                                 :must({'be greater than 0' => {$_ > 0} }), 
                                 :in($stub), :out($stub)),
-       13, "Successfully input 13";
+       13.6, "Successfully input number 13.6";
 }
 
 
