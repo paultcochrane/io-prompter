@@ -27,6 +27,22 @@ plan *;
 }
 
 {
+    my $stub = StubIO.new(:input("blue", ""));
+    is prompt-conway("Color", :in($stub), :out($stub)),
+       "blue", "Successfully input blue";
+    is $stub.output[0], "Color: ", "Properly added colon & space at end of prompt";
+    is prompt-conway("Color:", :default("Chartreuse"), :in($stub), :out($stub)),
+       "Chartreuse", "Successfully got default input";
+}
+
+{
+    my $stub = StubIO.new(:input("Lolz", "zebra-striped", "white"));
+    is prompt-conway("Color:", :must({'not include the letter zed' => {!($_ ~~ /z/)} }), 
+                               :in($stub), :out($stub)),
+       "white", "Successfully input white";
+}
+
+{
     my $stub = StubIO.new(:input("3", ""));
     is prompt-conway("Age", :integer, :in($stub), :out($stub)),
        3, "Successfully input integer 3";
