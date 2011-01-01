@@ -1,17 +1,6 @@
 use v6;
 # [TODO: Currently only runs until Rakudo 2010/01 release]
 
-# prompt() returns objects of this type to separate value, truth, definedness
-# [TODO: Could probably replace this with 'does'ing an anonymous role]...
-class IO::Prompter::Result {
-    has $!input;
-    has $!failed;
-
-    method defined {   $!input.defined }
-    method true    { ! $!failed        }
-    method Str     {   $!input         }
-};
-
 module IO::Prompter;
 
 # Utility regexes...
@@ -249,16 +238,19 @@ multi sub prompt-conway (
         @*ARGS = eval "$ENV_VARS; << $input >>";
         return 1;
     }
-
+    
     # Determine the success of the request...
     my $failed = !$input.defined
               || $yes|$Yes|$yesno|$YesNo && !$input
               || $input ~~ $fail;
-
-    # Wrap up the result and return it...
+              
     # [NOTE: conscious decision not to offer :verbatim option
     #        (i.e. string-only return) because strings are objects too
-    return IO::Prompter::Result.new(:$input, :$failed);
+    if $failed {
+        return $input but Bool::False;
+    } else {
+        return $input but Bool::True;
+    }
 }
 
 # [TODO: Port docs from Perl 5 IO::Prompter module]
