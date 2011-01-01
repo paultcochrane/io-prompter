@@ -38,13 +38,13 @@ my %constraint =
 #    Prompter   Add to  What to print on  Use this to check that   Conversion
 #      type     prompt  invalid input     input is valid           function
 #    ========   ======  ================  ======================   ==========
-      ::Int  => [': ', 'a valid integer', &check-integer,          *.Int      ],
-      ::Real => [': ', 'a valid number',  &check-number,             +*       ],
-      ::Bool => ['? ', '"yes" or "no"',   /^ \h* <yesno>   \h* $/, {?/<yes>/} ],
-    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?/<yes>/} ],
- CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <Yes>     \h* $/, {?/<yes>/} ],
- CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <YesNo>   \h* $/, {?/<yes>/} ],
-         Any => [': ', 'anything',        -> $a { Bool::True }   , { $^self } ];
+      ::Int  => [': ', 'a valid integer', &check-integer,          *.Int        ],
+      ::Real => [': ', 'a valid number',  &check-number,             +*         ],
+      ::Bool => ['? ', '"yes" or "no"',   /^ \h* <&yesno>  \h* $/, {?m/<&yes>/} ],
+    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?m/<&yes>/} ],
+ CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <&Yes>    \h* $/, {?m/<&yes>/} ],
+ CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <&YesNo>  \h* $/, {?m/<&yes>/} ],
+         Any => [': ', 'anything',        -> $a { Bool::True }   , { $^self }   ];
 
 # This sub ensures a value matches the specified set of constraints...
 sub invalid_input ($input, @constraints) {
@@ -79,7 +79,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
         %build_opt<must>.pairs;
     
     # Check that default supplied (via lower case option) is a valid response...
-    if %build_opt<default> !=:= $NULL_DEFAULT {
+    if %build_opt<default>.defined {
         if invalid_input(%build_opt<default>, @input_constraints) -> $problem {
             warn "prompt(): Cannot use default value {%build_opt<default>.perl} ",
                 $problem;
