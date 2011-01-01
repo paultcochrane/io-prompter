@@ -30,11 +30,31 @@ plan *;
     my $stub = StubIO.new;
     
     $stub.queue-input("3");
+    is prompt-conway("Weight:", :number, :in($stub), :out($stub)),
+       3, "Successfully input 3";
+    is $stub.output[0], "Weight: ", "Properly added space at end of prompt";
+
+    $stub.queue-input("");
+    is prompt-conway("Weight:", :number, :default(42), :in($stub), :out($stub)),
+       42, "Successfully got default input";
+}
+
+{
+    my $stub = StubIO.new;
+    
+    $stub.queue-input("3");
     is prompt-conway("Weight:", :number, :default(42), 
                                 :must({'be greater than 0'=> *>0 }), 
                                 :in($stub), :out($stub)),
        3, "Successfully input 3";
     is $stub.output[0], "Weight: ", "Properly added space at end of prompt";
+
+    $stub.queue-input("");
+    is prompt-conway("Weight:", :number, :default(42), 
+                                :must({'be greater than 0'=> *>0 }), 
+                                :in($stub), :out($stub)),
+       42, "Successfully got default input";
 }
+
 
 done;
