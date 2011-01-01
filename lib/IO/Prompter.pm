@@ -18,8 +18,8 @@ module IO::Prompter;
 my regex null    { <before .?> }   # [TODO: Remove when Rakudo implements this]
 my regex sign    { <[+\-]>     }
 my regex digits  {  \d+:       }
-my regex number  { <sign>? <digits> [\.<digits>?]? [<[eE]><sign>?<digits>]? }
-my regex integer { <sign>? <digits>        }
+my regex number  { <&sign>? <&digits> [\.<&digits>?]? [<[eE]><&sign>?<&digits>]? }
+my regex integer { <&sign>? <&digits>        }
 my regex yes     { :i ^ \h* [ y | yes ]    }
 my regex Yes     { :i <-[y]>               }
 my regex yesno   { :i [ y | yes | n | no ] }
@@ -35,16 +35,16 @@ sub check-number($a) {
 
 # Table of information for building prompters for various types...
 my %constraint =
-#    Prompter   Add to  What to print on  Use this to check that   Conversion
-#      type     prompt  invalid input     input is valid           function
-#    ========   ======  ================  ======================   ==========
-      ::Int  => [': ', 'a valid integer', &check-integer,          *.Int        ],
-      ::Real => [': ', 'a valid number',  &check-number,             +*         ],
-      ::Bool => ['? ', '"yes" or "no"',   /^ \h* <&yesno>  \h* $/, {?m/<&yes>/} ],
-    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/, {?m/<&yes>/} ],
- CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <&Yes>    \h* $/, {?m/<&yes>/} ],
- CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <&YesNo>  \h* $/, {?m/<&yes>/} ],
-         Any => [': ', 'anything',        -> $a { Bool::True }   , { $^self }   ];
+#    Prompter   Add to  What to print on  Use this to check that    Conversion
+#      type     prompt  invalid input     input is valid            function
+#    ========   ======  ================  ======================    ==========
+      ::Int  => [': ', 'a valid integer', /^ \h* <&integer> \h* $/, *.Int        ],
+      ::Real => [': ', 'a valid number',  /^ \h* <&number>  \h* $/,   +*         ],
+      ::Bool => ['? ', '"yes" or "no"',   /^ \h* <&yesno>   \h* $/, {?m/<&yes>/} ],
+    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+        \h* $/, {?m/<&yes>/} ],
+ CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <&Yes>     \h* $/, {?m/<&yes>/} ],
+ CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <&YesNo>   \h* $/, {?m/<&yes>/} ],
+         Any => [': ', 'anything',        -> $a { Bool::True },     { $^self }   ];
 
 # This sub ensures a value matches the specified set of constraints...
 sub invalid_input ($input, @constraints) {
