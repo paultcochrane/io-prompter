@@ -76,5 +76,15 @@ plan *;
        13.6, "Successfully input number 13.6";
 }
 
+{
+    my $stub = StubIO.new(:input("yes", "no"));
+    ok prompt-conway("Married?", :yesno, :in($stub), :out($stub)),
+       "Successfully got Bool::True";
+    is $stub.output[0], "Married? ", "Properly added space at end of prompt";
+    nok prompt-conway("Married?", :yesno, :in($stub), :out($stub)),
+        "Successfully got Bool::False";
+}
+
+
 
 done;
