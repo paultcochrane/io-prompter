@@ -31,7 +31,7 @@ my %constraint =
 #      type     prompt  invalid input     input is valid            function
 #    ========   ======  ================  ======================    ==========
       ::Int  => [': ', 'a valid integer', /^ \h* <&integer> \h* $/, *.Int        ],
-      ::Real => [': ', 'a valid number',  /^ \h* <&number>  \h* $/,   +*         ],
+      ::Real => [': ', 'a valid number',  /^ \h* <&number>  \h* $/, *.Real       ],
       ::Bool => ['? ', '"yes" or "no"',   /^ \h* <&yesno>   \h* $/, {?m/<&yes>/} ],
     SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+        \h* $/, {?m/<&yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <&Yes>     \h* $/, {?m/<&yes>/} ],
