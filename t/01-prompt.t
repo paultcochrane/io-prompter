@@ -36,9 +36,9 @@ plan *;
 }
 
 {
-    my $stub = StubIO.new(:input("Hello!", "blue 42", "4 2", "-345", "0", "13"));
+    my $stub = StubIO.new(:input("Hello!", "blue 42", "4 2", "", "-345", "0", "13"));
     is prompt-conway("Weight:", :number,
-                                :must({'be greater than 0'=> *>0 }), 
+                                :must({'be greater than 0' => {$_ > 0} }), 
                                 :in($stub), :out($stub)),
        13, "Successfully input 13";
 }
