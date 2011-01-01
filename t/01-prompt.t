@@ -3,25 +3,8 @@ use Test;
 use IO::Prompter;
 
 class StubIO is IO {
-    has @.input;
-    has @.output;
-    
-    method queue-input($a) {
-        @.input.push($a);
-    }
-    
-    method get-output() {
-        @.output;
-    }
-    
-    multi method get() {
-        @.input.shift;
-    }
-    
-    multi method print(*@items) {
-        @.output.push(@items);
-    }
-    
+    has @.input handles (:push<push>, :get<shift>, :queue-input<push>);
+    has @.output handles (:print<push>);
     multi method t() { Bool::True; }
 }
 
@@ -37,10 +20,10 @@ plan *;
     
     $stub.print("Let's see what happens here");
     $stub.print("or here", "here", "here");
-    is $stub.get-output[0], "Let's see what happens here", "Stored output works okay, part 1";
-    is $stub.get-output[1], "or here", "Stored output works okay, part 2";
-    is $stub.get-output[2], "here", "Stored output works okay, part 3";
-    is $stub.get-output[3], "here", "Stored output works okay, part 4";
+    is $stub.output[0], "Let's see what happens here", "Stored output works okay, part 1";
+    is $stub.output[1], "or here", "Stored output works okay, part 2";
+    is $stub.output[2], "here", "Stored output works okay, part 3";
+    is $stub.output[3], "here", "Stored output works okay, part 4";
 }
 
 {
@@ -51,7 +34,7 @@ plan *;
                                 :must({'be greater than 0'=> *>0 }), 
                                 :in($stub), :out($stub)),
        3, "Successfully input 3";
-    is $stub.get-output[0], "Weight: ", "Properly added space at end of prompt";
+    is $stub.output[0], "Weight: ", "Properly added space at end of prompt";
 }
 
 done;
