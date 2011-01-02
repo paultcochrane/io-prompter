@@ -1,6 +1,3 @@
 This is IO::Prompter, an improved prompt subroutine written
-by Damian Conway for (Rakudo) Perl 6.
-
-Or rather, this is a somewhat hacky port of Damian's elegant IO::Prompter to
-work on the current Rakudo releases. Here's hoping he'll forgive me for doing
-this to his beautiful code.
+by Damian Conway for (Rakudo) Perl 6.  This is his version from 
+1/1/2011, plus some tests added by colomon and moritz.
