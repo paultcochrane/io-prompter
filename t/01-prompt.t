@@ -30,7 +30,6 @@ plan *;
     my $stub = StubIO.new(:input("blue", ""));
     my $result = prompt("Color", :in($stub), :out($stub));
     ok $result, "Result is true";
-    ok $result ~~ Str, "Result is a Str";
     is $result, "blue", "Successfully input blue";
     is $stub.output[0], "Color: ", "Properly added colon & space at end of prompt";
     is prompt("Color:", :default("Chartreuse"), :in($stub), :out($stub)),
