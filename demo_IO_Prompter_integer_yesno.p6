@@ -4,10 +4,10 @@ use v6;
 use IO::Prompter;
 
 loop {
-    my $name    = prompt-conway("Name:")            // last;
-    my $age     = prompt-conway("Age:", :integer, :must({'be positive'=>*>0}) )
-                                             // last;
-    my $married = prompt-conway("Married?", :yesno) // last;
+    my $name    = prompt("Name:")            // last;
+    my $age     = prompt("Age:", :integer, :must({'be positive' => {$_ > 0}}) )
+                                      // last;
+    my $married = prompt("Married?", :yesno) // last;
 
     report($name, $age, $married);
 }
