@@ -164,7 +164,8 @@ multi sub prompt (
     my $prompter = build_prompter_for($constraint, :$in, :$out, :$default, :$must);
 
     if ($wipe || $wipefirst && $first_wipe) {
-        say "\n" x 60;
+        $out.print("\n" x 61)
+            if ($in & $out).t;
         $first_wipe = 0;
     }
 
