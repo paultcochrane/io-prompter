@@ -15,7 +15,7 @@ plan *;
 
     my @results;
     prompt :in($stub), :out($stub), -> Str $i {
-        isa_ok $i, Str, "Block gets Int as specified";
+        isa_ok $i, Str, "Block gets Str as specified";
         @results.push($i);
     };
     
@@ -44,6 +44,18 @@ plan *;
     };
     
     is ~@results, ~(10, 20.2, 40e20), "Got the correct results";
+}
+
+{
+    my $stub = StubIO.new(:input("yes", "no", "green", "no", "yes"));
+
+    my @results;
+    prompt :in($stub), :out($stub), -> Bool $i {
+        isa_ok $i, Bool, "Block gets Bool as specified";
+        @results.push($i);
+    };
+    
+    is ~@results, ~(Bool::True, Bool::False, Bool::False, Bool::True), "Got the correct results";
 }
 
 
