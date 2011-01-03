@@ -51,7 +51,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
                 $out.print("Please enter $description. $prompt")
                     if ($in & $out).t;
             }
-            elsif $retval !~~ (%build_opt<constraints>//Mu) {
+            elsif $retval !~~ %build_opt<constraints>.all {
                 $out.print("Please enter a valid {lc $prompt}")
                     if ($in & $out).t;
             }

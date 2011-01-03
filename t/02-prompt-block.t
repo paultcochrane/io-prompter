@@ -58,6 +58,32 @@ plan *;
     is ~@results, ~(Bool::True, Bool::False, Bool::False, Bool::True), "Got the correct results";
 }
 
+{
+    my $stub = StubIO.new(:input("10", "20", "fdfd", "40", "Hello!"));
+
+    my @results;
+    prompt :in($stub), :out($stub), -> Str $i where /\D/ {
+        isa_ok $i, Str, "Block gets Str as specified";
+        @results.push($i);
+    };
+    
+    is ~@results, ~("fdfd", "Hello!"), "Got the correct results";
+}
+
+{
+    subset Coefficient of Num where 0..1;
+    
+    my $stub = StubIO.new(:input("10", "0.5", "fdfd", "0.0", "1", "Hello!"));
+
+    my @results;
+    prompt :in($stub), :out($stub), -> Coefficient $i {
+        isa_ok $i, Coefficient, "Block gets Coefficient as specified";
+        @results.push($i);
+    };
+    
+    is ~@results, ~(0.5, 0.0, 1), "Got the correct results";
+}
+
 
 
 done;
