@@ -76,12 +76,12 @@ sub varname_to_prompt ($name) {
     return $name.subst(/^<-alnum>+/, "").subst(/_/, " ", :g).ucfirst;
 }
 
-multi sub prompt ( &block ) is export {
+multi sub prompt (&block, :$in = $*IN, :$out = $*OUT) is export {
     my (%named, @positional, $eof);
 
     my @param_prompters = gather for &block.signature.params -> $param {
         my $constraints = $param.constraints;
-        my $prompter   = build_prompter_for($param.type.perl, :$constraints, :autopunctuate);
+        my $prompter   = build_prompter_for($param.type.perl, :$in, :$out, :$constraints, :autopunctuate);
 
         if $param.named {
             my $label = $param.named_names;
@@ -96,7 +96,7 @@ multi sub prompt ( &block ) is export {
 
     my @gathered;    # Workaround for broken optimization behaviour
     loop {
-        say "";
+        $out.print("\n");
         %named = @positional = ();
         for @param_prompters { $^prompter() unless $eof }
         last if $eof;
