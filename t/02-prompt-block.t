@@ -84,6 +84,4 @@ plan *;
     is ~@results, ~(0.5, 0.0, 1), "Got the correct results";
 }
 
-
-
 done;
