@@ -2,7 +2,7 @@
     "name"        : "IO::Prompter",
     "version"     : "*",
     "description" : "Damian Conway's IO::Prompter",
-    "depends"     : [],
+    "depends"     : ["Testing"],
     "repo-type"   : "git",
     "repo-url"    : "git://github.com/colomon/io-prompter.git"
 }
