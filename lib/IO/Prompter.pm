@@ -115,7 +115,7 @@ multi sub prompt (
 Str   :d(:$default),
 #--> :D(:$DEFAULT)        of Str,
 # :e(  :$echo      )   of Str,
-Bool  :f(:$fail)      = sub{False},
+Bool  :f(:$fail)      = False,
 IO    :$in            = $*IN,
 # :g(  :$guarantee )   of Hash       = hash{},
 # :h(  :$history   )   of Str,
