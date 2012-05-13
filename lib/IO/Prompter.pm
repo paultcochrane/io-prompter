@@ -15,7 +15,7 @@ class IO::Prompter::Result {
     method Integral{   $!input.Int     }
 };
 
-module IO::Prompter;
+module IO::Prompter {
 
 my $null    = regex { <before .?> }
 my $sign    = regex { <[+\-]> }
@@ -112,32 +112,32 @@ multi sub prompt (
   $prompt_str?,
 # :a(  :$args       )  of Bool,
 # :c(  :$complete   )  of Array|Hash|Str,
-  :d(:$default)        of Str,
+Str   :d(:$default),
 #--> :D(:$DEFAULT)        of Str,
 # :e(  :$echo      )   of Str,
-  :f(:$fail)           of Bool       = sub{False},
-       :$in            of IO         = $*IN,
+Bool  :f(:$fail)      = sub{False},
+IO    :$in            = $*IN,
 # :g(  :$guarantee )   of Hash       = hash{},
 # :h(  :$history   )   of Str,
-  :i(:$integer)        of Bool,
+Bool  :i(:$integer),
 # :k(  :$keyletters )  of Bool,
 # :l(  :$line       )  of Bool,
 #-->   :$menu          of Any,
-       :$must          of Hash       = hash{},
-  :n(:$number)         of Bool,
-       :$out           of IO         = $*OUT,
-  :p(:$prompt)         of Str is copy,
+Hash   :$must          = hash(),
+Bool   :n(:$number)    ,
+IO     :$out           = $*OUT,
+Str    :p(:$prompt)    is copy,
 # :r(  :$return     )  of Str,
 #      :$stdio         of Bool,
 # :s(  :$single     )  of Bool,
 # :t(  :$timeout    )  of Bool,
-  :v(:$verbatim)       of Bool,
-  :w(:$wipe)           of Bool,
-  :wf(:$wipefirst)     of Bool,
-  :y(:$yes)            of Bool,
-  :yn(:$yesno)         of Bool,
-  :Y(:$Yes)            of Bool,
-  :YN(:$YesNo)         of Bool,
+Bool   :v(:$verbatim)  ,
+Bool   :w(:$wipe)      ,
+Bool   :wf(:$wipefirst),
+Bool   :y(:$yes)       ,
+Bool   :yn(:$yesno)    ,
+Bool   :Y(:$Yes)       ,
+Bool   :YN(:$YesNo)    ,
   *%unexpected_options,
   *@prompt,
 ) is export {
@@ -178,3 +178,4 @@ multi sub prompt (
                      !! IO::Prompter::Result.new(:$input, :$failed);
 }
 
+}
