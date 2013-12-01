@@ -55,8 +55,8 @@ plan *;
 {
     my $stub = StubIO.new(:input("Hello!", "blue 42", "23.3", "4 2", "", "-345", "0", "13"));
     is prompt("Age:", :integer,
-                             :must({'be greater than 0' => {$_ > 0} }), 
-                             :in($stub), :out($stub)),
+                      :must({'be greater than 0' => {$_ > 0} }), 
+                      :in($stub), :out($stub)),
        13, "Successfully input integer 13";
 }
 

@@ -31,7 +31,7 @@ my %constraint =
         Int  => [': ', 'a valid integer', /^ \h* <$integer> \h* $/,    *.Int     ],
         Num  => [': ', 'a valid number',  /^ \h* <$number>  \h* $/,      +*      ],
         Bool => ['? ', '"yes" or "no"',   /^ \h* <$yesno>   \h* $/, {?m/<$yes>/} ],
-    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+       \h* $/,  {?m/<$yes>/} ],
+    SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+        \h* $/, {?m/<$yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <$Yes>     \h* $/, {?m/<$yes>/} ],
  CapFullBool => ['? ', '"Yes" or "No"',   /^ \h* <$YesNo>   \h* $/, {?m/<$yes>/} ],
           Mu => [': ', 'anything',        /      <$null>         /, {  $^self  } ];
@@ -46,12 +46,14 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
         loop {
             my $input = $in.get() // return;
             $input = %build_opt<default> // $input if $input eq "";
-            my $retval = $extractor($input);
             if $input !~~ $match {
                 $out.print("Please enter $description. $prompt")
                     if ($in & $out).t;
+                next;
             }
-            elsif $retval !~~ %build_opt<constraints>.all {
+
+            my $retval = $extractor($input);
+            if $retval !~~ %build_opt<constraints>.all {
                 $out.print("Please enter a valid {lc $prompt}")
                     if ($in & $out).t;
             }
@@ -112,7 +114,7 @@ multi sub prompt (
   $prompt_str?,
 # :a(  :$args       )  of Bool,
 # :c(  :$complete   )  of Array|Hash|Str,
-Str   :d(:$default),
+      :d(:$default) as Str = "",
 #--> :D(:$DEFAULT)        of Str,
 # :e(  :$echo      )   of Str,
 Bool  :f(:$fail)      = False,
