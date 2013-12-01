@@ -2,17 +2,17 @@
 use v6;
 
 class IO::Prompter::Result {
-    has $!input;
-    has $!failed;
+    has $.input;
+    has $.failed;
 
-    method defined {   $!input.defined }
-    method Bool    { ! $!failed        }
-    method Str     { ~ $!input         }
-    method Stringy { ~ $!input         }
-    method Num     { + $!input         }
-    method Numeric { + $!input         }
-    method Int     {   $!input.Int     }
-    method Integral{   $!input.Int     }
+    method defined {   $.input.defined }
+    method Bool    { ! $.failed        }
+    method Str     { ~ $.input         }
+    method Stringy { ~ $.input         }
+    method Num     { + $.input         }
+    method Numeric { + $.input         }
+    method Int     {   $.input.Int     }
+    method Integral{   $.input.Int     }
 };
 
 module IO::Prompter {
