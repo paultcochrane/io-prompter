@@ -29,7 +29,7 @@ my $YesNo   = regex {    [ Y | Yes | N | No ] }
 
 my %constraint =
         Int  => [': ', 'a valid integer', /^ \h* <$integer> \h* $/,    *.Int     ],
-        Num  => [': ', 'a valid number',  /^ \h* <$number>  \h* $/,      +*      ],
+        Num  => [': ', 'a valid number',  /^ \h* <$number>  \h* $/,    *.Num     ],
         Bool => ['? ', '"yes" or "no"',   /^ \h* <$yesno>   \h* $/, {?m/<$yes>/} ],
     SemiBool => ['? ', '"yes" or "no"',   /^ \h* \S+        \h* $/, {?m/<$yes>/} ],
  CapSemiBool => ['? ', '"Yes" for yes',   /^ \h* <$Yes>     \h* $/, {?m/<$yes>/} ],
@@ -75,7 +75,7 @@ sub build_prompter_for (Mu $type, :$in = $*IN, :$out = $*OUT, *%build_opt) {
 }
 
 sub varname_to_prompt ($name) {
-    return $name.subst(/^<-alnum>+/, "").subst(/_/, " ", :g).ucfirst;
+    return $name.subst(/^<-alnum>+/, "").subst(/_/, " ", :g).tc;
 }
 
 multi sub prompt (&block, :$in = $*IN, :$out = $*OUT) is export {
