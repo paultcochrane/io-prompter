@@ -78,7 +78,7 @@ sub varname_to_prompt ($name) {
     return $name.subst(/^<-alnum>+/, "").subst(/_/, " ", :g).tc;
 }
 
-multi sub prompt (&block, :$in = $*IN, :$out = $*OUT) is export {
+sub prompt-block (&block, :$in = $*IN, :$out = $*OUT) {
     my (%named, @positional, $eof);
 
     my @param_prompters = gather for &block.signature.params -> $param {
@@ -110,14 +110,14 @@ multi sub prompt (&block, :$in = $*IN, :$out = $*OUT) is export {
 
 my $first_wipe = 1;
 
-multi sub prompt (
+sub prompt-straight (
   $prompt_str?,
 # :a(  :$args       )  of Bool,
 # :c(  :$complete   )  of Array|Hash|Str,
       :d(:$default) as Str = "",
 #--> :D(:$DEFAULT)        of Str,
 # :e(  :$echo      )   of Str,
-Bool  :f(:$fail)      = False,
+      :f(:$fail)      = False,
 IO    :$in            = $*IN,
 # :g(  :$guarantee )   of Hash       = hash{},
 # :h(  :$history   )   of Str,
@@ -142,7 +142,7 @@ Bool   :Y(:$Yes)       ,
 Bool   :YN(:$YesNo)    ,
   *%unexpected_options,
   *@prompt,
-) is export {
+) {
     # Die horribly if unknown options are offered...
     if %unexpected_options {
         die %unexpected_options.map({"Unknown option in call to prompt(): $_.perl()"}).join("\n");
@@ -178,6 +178,17 @@ Bool   :YN(:$YesNo)    ,
 
     return $verbatim ?? $input
                      !! IO::Prompter::Result.new(:$input, :$failed);
+}
+
+sub prompt (
+    *@prompt,
+    *%options
+) is export {
+    if @prompt == 1 && @prompt[0] ~~ Block {
+        prompt-block(@prompt[0], |%options);
+    } else {
+        prompt-straight(|@prompt, |%options);
+    }
 }
 
 }
